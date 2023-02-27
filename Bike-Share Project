@@ -1,0 +1,102 @@
+*** Combining 12 datasets into a single dataset
+
+SELECT *
+     INTO #case_study_new
+FROM dbo.April
+UNION
+SELECT *
+FROM dbo.May
+UNION
+SELECT *
+FROM dbo.June
+UNION
+SELECT *
+FROM dbo.July
+UNION
+SELECT *
+FROM dbo.August
+UNION
+SELECT *
+FROM dbo.September
+UNION
+SELECT *
+FROM  dbo.October
+UNION
+SELECT *
+FROM dbo.November
+UNION
+SELECT *
+FROM dbo.December
+UNION
+SELECT *
+FROM dbo.January
+UNION
+SELECT *
+FROM dbo.February
+UNION
+SELECT *
+FROM dbo.March
+) a
+
+
+*** Verify the joined dataset using Gitbash
+
+cd C:\Users\Desktop\cyc
+copy *.csv case_study.csv
+
+*** Count the annual number of rides for member & casual subscribers
+
+SELECT rideable_Type, member_casual, COUNT(*)
+FROM dbo.case_study_new
+GROUP BY rideable_type, member_casual;
+
+
+*** Count the top and bottom stations where rides ended most
+
+SELECT end_station_id, end_station_name, COUNT(1) as case_station
+FROM dbo.case_study_new
+GROUP BY end_station_id, end_station_name
+ORDER BY case_station;
+
+*** Count the top and bottom stations where rides started
+
+SELECT start_station_id, start_station_name, COUNT(1) case_ride
+FROM dbo.case_study_new
+GROUP BY start_station_id, start_station_name
+ORDER BY case_ride;
+
+*** Count of top and bottom stations used by casual and member subscription
+
+SELECT start_station_id, start_station_name, COUNT(1) AS case_casual
+FROM dbo.case_study_new
+WHERE member_casual = ‘casual’
+GROUP BY start_station_id, start_station_name
+ORDER BY case_casual DESC;
+
+*** Weekday calculation by casual and member column
+
+SELECT DATENAME(WEEKDAY, started_at) as WEEK_DAY, COUNT(*)
+FROM dbo.case_study_new
+WHERE member_casual = ‘member”
+GROUP BY started_at;
+
+*** To find the top 10 start_latitude and start_ longitude
+
+SELECT start_lat, end_lat, COUNT(*) AS geo
+FROM dbo.case_study_new
+WHERE member_casual = ‘member’
+GROUP BY start_lat, end_lat
+ORDER BY geo DESC;
+
+Note: Where there are two variables in a column, the steps are repeated to obtain both datasets. 
+
+*** Remove Duplicates 
+
+SELECT DISTINCT *
+FROM case_study_new
+
+*** Delete Null Columns
+
+DELETE
+FROM case_study_new
+WHERE member_casual is NULL;
